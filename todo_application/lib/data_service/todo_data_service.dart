@@ -11,7 +11,7 @@ abstract class ITodoDataService {
 class TodoDataService implements ITodoDataService {
   IPreferenceHelper iPreferenceHelper;
 
-  TodoDataService({@required IPreferenceHelper iPreferenceHelper});
+  TodoDataService({@required this.iPreferenceHelper});
 
   @override
   Future<TodoList> geTodoList() async {

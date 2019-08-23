@@ -42,9 +42,9 @@ class TodoViewModel extends Model with ITodoViewModel {
 
   TodoViewModel({@required this.todoDataService});
 
-  bool _isLoading;
+  bool _isLoading = true;//default false
 
-  String _message;
+  String _message = "";//default empty to prevent null exception on Text widget
 
   TodoList _todoList;
 
@@ -74,7 +74,7 @@ class TodoViewModel extends Model with ITodoViewModel {
     notifyListeners();
 
     _todoList = await todoDataService.geTodoList();
-    _message = "You have ${_todoList.todoItems.length} Task";
+    _message = "Data loaded susseccfully";
 
     _isLoading = false;
     notifyListeners();

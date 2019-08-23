@@ -41,13 +41,13 @@ class TodoItem {
     id: json["id"] == null ? null : json["id"],
     isCompleted: json["isCompleted"] == null ? null : json["isCompleted"],
     task: json["task"] == null ? null : json["task"],
-    description: json["description"] == null ? null : json["description"],
+    description: json["description"] == null ? "" : json["description"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id == null ? null : id,
     "isCompleted": isCompleted == null ? null : isCompleted,
     "task": task == null ? null : task,
-    "description": description == null ? null : description,
+    "description": description == null ? "" : description,
   };
 }
