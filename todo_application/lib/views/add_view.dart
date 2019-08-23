@@ -152,18 +152,18 @@ class AddViewState extends State<AddView> {
               validateTask = false;
               errorMessageTask = iMessage.errorMessageTask;
             });
+          } else {
+            widget.iTodoViewModel.addTask(
+              task: taskController.text,
+              description: descriptionController.text,
+              onComplete: () {
+                Navigator.pop(context);
+              },
+              onError: () {
+                Navigator.pop(context);
+              },
+            );
           }
-
-          widget.iTodoViewModel.addTask(
-            task: taskController.text,
-            description: descriptionController.text,
-            onComplete: () {
-              Navigator.pop(context);
-            },
-            onError: () {
-              Navigator.pop(context);
-            },
-          );
         },
       ),
     );

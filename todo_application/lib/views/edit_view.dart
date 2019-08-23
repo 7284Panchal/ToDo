@@ -194,20 +194,20 @@ class EditViewState extends State<EditView> {
               validateTask = false;
               errorMessageTask = "Task should not empty";
             });
+          } else {
+            widget.iTodoViewModel.updateTask(
+              id: widget.todoItem.id,
+              task: taskController.text,
+              description: descriptionController.text,
+              isCompleted: widget.todoItem.isCompleted,
+              onComplete: () {
+                Navigator.pop(context);
+              },
+              onError: () {
+                Navigator.pop(context);
+              },
+            );
           }
-
-          widget.iTodoViewModel.updateTask(
-            id: widget.todoItem.id,
-            task: taskController.text,
-            description: descriptionController.text,
-            isCompleted: widget.todoItem.isCompleted,
-            onComplete: () {
-              Navigator.pop(context);
-            },
-            onError: () {
-              Navigator.pop(context);
-            },
-          );
         },
       ),
     );
