@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_application/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
 
@@ -14,8 +15,6 @@ class AddView extends StatefulWidget {
 }
 
 class AddViewState extends State<AddView> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   TextEditingController taskController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
@@ -26,23 +25,22 @@ class AddViewState extends State<AddView> {
   bool validateTask = false;
 
   @override
+  void dispose() {
+    taskController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           "To do",
-          style: TextStyle(
-            fontSize: 22,
-            color: Color(
-              0xFFFFFFFF,
-            ),
-          ),
+          style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(
-          0xFF17914A,
-        ),
+        backgroundColor: iStyle.themeColor,
         elevation: 10,
       ),
       body: ScopedModel<TodoViewModel>(
@@ -53,9 +51,7 @@ class AddViewState extends State<AddView> {
               return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(
-                      0xFF17914A,
-                    ),
+                    iStyle.themeColor,
                   ),
                 ),
               );
@@ -79,13 +75,8 @@ class AddViewState extends State<AddView> {
               bottom: 20,
             ),
             child: Text(
-              "Create task",
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(
-                  0xFF333333,
-                ),
-              ),
+              iMessage.createNewTask,
+              style: iStyle.headerTextStyle,
             ),
           ),
           _buildTaskField(),
@@ -100,7 +91,6 @@ class AddViewState extends State<AddView> {
     return Container(
       margin: EdgeInsets.all(20),
       child: TextField(
-        autofocus: true,
         controller: taskController,
         focusNode: taskFocusNode,
         onEditingComplete: () {
@@ -112,12 +102,8 @@ class AddViewState extends State<AddView> {
         textInputAction: TextInputAction.next,
         maxLines: 1,
         decoration: InputDecoration(
-          labelText: "Task",
-          hintStyle: TextStyle(
-            color: Color(
-              0xFF6E7687,
-            ),
-          ),
+          labelText: iMessage.labelTask,
+          hintStyle: iStyle.textFieldTextStyle,
           errorText: !validateTask ? errorMessageTask : null,
         ),
       ),
@@ -138,12 +124,8 @@ class AddViewState extends State<AddView> {
         textCapitalization: TextCapitalization.words,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          labelText: "Description",
-          hintStyle: TextStyle(
-            color: Color(
-              0xFF6E7687,
-            ),
-          ),
+          labelText: iMessage.labelDescription,
+          hintStyle: iStyle.textFieldTextStyle,
         ),
       ),
     );
@@ -159,23 +141,16 @@ class AddViewState extends State<AddView> {
             Radius.circular(8),
           ),
         ),
-        color: Color(
-          0xFF17914A,
-        ),
+        color: iStyle.themeColor,
         child: Text(
-          "Add Task",
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(
-              0xFFFFFFFF,
-            ),
-          ),
+          iMessage.addTask,
+          style: iStyle.buttonTextStyle,
         ),
         onPressed: () {
           if (taskController.text.isEmpty) {
             setState(() {
               validateTask = false;
-              errorMessageTask = "Task should not empty";
+              errorMessageTask = iMessage.errorMessageTask;
             });
           }
 
@@ -183,27 +158,14 @@ class AddViewState extends State<AddView> {
             task: taskController.text,
             description: descriptionController.text,
             onComplete: () {
-              showSnackBar(widget.iTodoViewModel.getMessage());
-              Future.delayed(Duration(seconds: 2,),(){
-                Navigator.pop(context);
-              });
+              Navigator.pop(context);
             },
             onError: () {
-              showSnackBar(widget.iTodoViewModel.getMessage());
+              Navigator.pop(context);
             },
           );
         },
       ),
     );
-  }
-
-  showSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      backgroundColor: Color(
-        0xFF17914A,
-      ),
-      content: Text(message),
-      duration: Duration(seconds: 2),
-    ));
   }
 }

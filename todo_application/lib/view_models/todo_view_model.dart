@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:todo_application/data_service/todo_data_service.dart';
 import 'package:todo_application/models/todo_list.dart';
+import 'package:todo_application/main.dart';
 
 abstract class ITodoViewModel {
   bool isLoading();
@@ -30,6 +31,11 @@ abstract class ITodoViewModel {
     VoidCallback onError,
   });
 
+  void updateTaskStatus({
+    int id,
+    bool isCompleted,
+  });
+
   void deleteTask({
     int id,
     VoidCallback onComplete,
@@ -42,9 +48,9 @@ class TodoViewModel extends Model with ITodoViewModel {
 
   TodoViewModel({@required this.todoDataService});
 
-  bool _isLoading = true;//default false
+  bool _isLoading = true; //default false
 
-  String _message = "";//default empty to prevent null exception on Text widget
+  String _message = ""; //default empty to prevent null exception on Text widget
 
   TodoList _todoList;
 
@@ -74,7 +80,7 @@ class TodoViewModel extends Model with ITodoViewModel {
     notifyListeners();
 
     _todoList = await todoDataService.geTodoList();
-    _message = "Data loaded susseccfully";
+    _message = iMessage.taskLoaded;
 
     _isLoading = false;
     notifyListeners();
@@ -103,16 +109,26 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = "Task added successfully";
+      _message = iMessage.taskCreated;
       _isLoading = false;
       notifyListeners();
       onComplete();
     } else {
-      _message = "Something went wrong.Try again";
+      _message = iMessage.processingError;
       _isLoading = false;
       notifyListeners();
       onError();
     }
+  }
+
+  @override
+  void updateTaskStatus({int id, bool isCompleted}) async {
+    //get index of todoItem with matching id
+    int index = _todoList.todoItems.indexWhere((todoItem) => todoItem.id == id);
+
+    _todoList.todoItems.elementAt(index).isCompleted = isCompleted;
+
+    await todoDataService.setTodoList(todoList: _todoList);
   }
 
   @override
@@ -138,12 +154,12 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = "Task updated successfully";
+      _message = iMessage.taskUpdated;
       _isLoading = false;
       notifyListeners();
       onComplete();
     } else {
-      _message = "Something went wrong.Try again";
+      _message = iMessage.processingError;
       _isLoading = false;
       notifyListeners();
       onError();
@@ -165,12 +181,12 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = "Task deleted successfully";
+      _message = iMessage.taskDeleted;
       _isLoading = false;
       notifyListeners();
       onComplete();
     } else {
-      _message = "Something went wrong.Try again";
+      _message = iMessage.processingError;
       _isLoading = false;
       notifyListeners();
       onError();

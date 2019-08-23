@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
+import 'package:todo_application/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
 import 'package:todo_application/views/add_view.dart';
@@ -13,6 +14,8 @@ class HomeView extends StatefulWidget {
 }
 
 class HomeViewState extends State<HomeView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   //get view model
   ITodoViewModel iTodoViewModel = Injector.getInjector().get<ITodoViewModel>();
 
@@ -25,13 +28,14 @@ class HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           "To do",
-          style: TextStyle(fontSize: 22, color: Color(0xFFFFFFFF)),
+          style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(0xFF17914A),
+        backgroundColor: iStyle.themeColor,
         elevation: 10,
       ),
       floatingActionButton: FloatingActionButton(
@@ -41,13 +45,15 @@ class HomeViewState extends State<HomeView> {
             MaterialPageRoute(
               builder: (context) => AddView(iTodoViewModel: iTodoViewModel),
             ),
-          );
+          ).then((value) {
+            showSnackBar(iTodoViewModel.getMessage());
+          });
         },
-        backgroundColor: Color(0xFF17914A),
+        backgroundColor: iStyle.themeColor,
         child: Icon(
           Icons.add,
         ),
-        tooltip: "Create new task",
+        tooltip: iMessage.createNewTask,
       ),
       body: ScopedModel<TodoViewModel>(
         model: iTodoViewModel,
@@ -56,7 +62,7 @@ class HomeViewState extends State<HomeView> {
             if (model.isLoading()) {
               return Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF17914A)),
+                  valueColor: AlwaysStoppedAnimation<Color>(iStyle.themeColor),
                 ),
               );
             } else {
@@ -78,8 +84,10 @@ class HomeViewState extends State<HomeView> {
               bottom: 20,
             ),
             child: Text(
-              "You have ${model.getTodoListCount()} task",
-              style: TextStyle(fontSize: 16, color: Color(0xFF333333)),
+              iMessage.totalTask(
+                model.getTodoListCount(),
+              ),
+              style: iStyle.headerTextStyle,
             ),
           ),
           Divider(
@@ -108,26 +116,19 @@ class HomeViewState extends State<HomeView> {
         ListTile(
           title: Text(
             model.getTodoList().todoItems.elementAt(index).task,
-            style: TextStyle(fontSize: 16, color: Color(0xFF4C4C4C)),
+            style: iStyle.titleTextStyle,
           ),
           subtitle: Text(
             model.getTodoList().todoItems.elementAt(index).description,
-            style: TextStyle(fontSize: 14, color: Color(0xFF6E7687)),
+            style: iStyle.subTitleTextStyle,
           ),
           leading: Checkbox(
-            activeColor: Color(
-              0xFF17914A,
-            ),
+            activeColor: iStyle.themeColor,
             value: model.getTodoList().todoItems.elementAt(index).isCompleted,
             onChanged: (value) {
-              model.updateTask(
+              model.updateTaskStatus(
                 id: model.getTodoList().todoItems.elementAt(index).id,
-                task: model.getTodoList().todoItems.elementAt(index).task,
-                description:
-                    model.getTodoList().todoItems.elementAt(index).description,
                 isCompleted: value,
-                onComplete: () {},
-                onError: () {},
               );
               setState(() {
                 model.getTodoList().todoItems.elementAt(index).isCompleted =
@@ -140,8 +141,15 @@ class HomeViewState extends State<HomeView> {
               Icons.delete_forever,
             ),
             onPressed: () {
-              model.deleteTask(id: model.getTodoList().todoItems.elementAt(index).id,
-              onComplete: (){},onError: (){},);
+              model.deleteTask(
+                id: model.getTodoList().todoItems.elementAt(index).id,
+                onComplete: () {
+                  showSnackBar(iTodoViewModel.getMessage());
+                },
+                onError: () {
+                  showSnackBar(iTodoViewModel.getMessage());
+                },
+              );
             },
           ),
           isThreeLine: true,
@@ -149,9 +157,14 @@ class HomeViewState extends State<HomeView> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EditView(iTodoViewModel: iTodoViewModel,todoItem: model.getTodoList().todoItems.elementAt(index),),
+                builder: (context) => EditView(
+                      iTodoViewModel: iTodoViewModel,
+                      todoItem: model.getTodoList().todoItems.elementAt(index),
+                    ),
               ),
-            );
+            ).then((value) {
+              showSnackBar(iTodoViewModel.getMessage());
+            });
           },
         ),
         Divider(
@@ -159,5 +172,13 @@ class HomeViewState extends State<HomeView> {
         ),
       ],
     );
+  }
+
+  showSnackBar(String message) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      backgroundColor: iStyle.themeColor,
+      content: Text(message),
+      duration: Duration(seconds: 1),
+    ));
   }
 }

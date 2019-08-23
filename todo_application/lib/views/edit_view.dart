@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_application/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:todo_application/models/todo_list.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
@@ -16,8 +17,6 @@ class EditView extends StatefulWidget {
 }
 
 class EditViewState extends State<EditView> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   TextEditingController taskController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
@@ -28,9 +27,15 @@ class EditViewState extends State<EditView> {
   bool validateTask = false;
 
   @override
+  void dispose() {
+    taskController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           "To do",
@@ -81,7 +86,7 @@ class EditViewState extends State<EditView> {
               bottom: 20,
             ),
             child: Text(
-              "Update task",
+              iMessage.updateTask,
               style: TextStyle(
                 fontSize: 16,
                 color: Color(
@@ -107,7 +112,6 @@ class EditViewState extends State<EditView> {
     return Container(
       margin: EdgeInsets.all(20),
       child: TextField(
-        autofocus: true,
         controller: taskController,
         focusNode: taskFocusNode,
         onEditingComplete: () {
@@ -119,7 +123,7 @@ class EditViewState extends State<EditView> {
         textInputAction: TextInputAction.next,
         maxLines: 1,
         decoration: InputDecoration(
-          labelText: "Task",
+          labelText: iMessage.labelTask,
           hintStyle: TextStyle(
             color: Color(
               0xFF6E7687,
@@ -151,7 +155,7 @@ class EditViewState extends State<EditView> {
         textCapitalization: TextCapitalization.words,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          labelText: "Description",
+          labelText: iMessage.labelDescription,
           hintStyle: TextStyle(
             color: Color(
               0xFF6E7687,
@@ -176,7 +180,7 @@ class EditViewState extends State<EditView> {
           0xFF17914A,
         ),
         child: Text(
-          "Update Task",
+          iMessage.updateTask,
           style: TextStyle(
             fontSize: 16,
             color: Color(
@@ -198,30 +202,14 @@ class EditViewState extends State<EditView> {
             description: descriptionController.text,
             isCompleted: widget.todoItem.isCompleted,
             onComplete: () {
-              showSnackBar(widget.iTodoViewModel.getMessage());
-              Future.delayed(
-                  Duration(
-                    seconds: 2,
-                  ), () {
-                Navigator.pop(context);
-              });
+              Navigator.pop(context);
             },
             onError: () {
-              showSnackBar(widget.iTodoViewModel.getMessage());
+              Navigator.pop(context);
             },
           );
         },
       ),
     );
-  }
-
-  showSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      backgroundColor: Color(
-        0xFF17914A,
-      ),
-      content: Text(message),
-      duration: Duration(seconds: 2),
-    ));
   }
 }
