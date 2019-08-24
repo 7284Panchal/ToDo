@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:todo_application/dependency_injection.dart';
 import 'package:todo_application/style.dart';
-import 'package:todo_application/views/message.dart';
+import 'package:todo_application/message.dart';
 import 'package:todo_application/views/home_view.dart';
 
 IStyle iStyle;

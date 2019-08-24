@@ -1,6 +1,6 @@
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:todo_application/style.dart';
-import 'package:todo_application/views/message.dart';
+import 'package:todo_application/message.dart';
 import 'package:todo_application/data/preference_helper.dart';
 import 'package:todo_application/data_service/todo_data_service.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
