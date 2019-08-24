@@ -23,6 +23,8 @@ abstract class IStyle {
 
   TextStyle get titleTextStyle;
 
+  TextStyle get titleDoneTextStyle;
+
   TextStyle get subTitleTextStyle;
 
   TextStyle get textFieldTextStyle;
@@ -68,6 +70,15 @@ class Style implements IStyle {
   @override
   TextStyle get titleTextStyle {
     return TextStyle(fontSize: 16, color: titleTextColor);
+  }
+
+  @override
+  TextStyle get titleDoneTextStyle {
+    return TextStyle(
+      fontSize: 16,
+      color: titleTextColor,
+      decoration: TextDecoration.lineThrough,
+    );
   }
 
   @override

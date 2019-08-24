@@ -116,7 +116,9 @@ class HomeViewState extends State<HomeView> {
         ListTile(
           title: Text(
             model.getTodoList().todoItems.elementAt(index).task,
-            style: iStyle.titleTextStyle,
+            style: model.getTodoList().todoItems.elementAt(index).isCompleted
+                ? iStyle.titleDoneTextStyle
+                : iStyle.titleTextStyle,
           ),
           subtitle: Text(
             model.getTodoList().todoItems.elementAt(index).description,
@@ -144,10 +146,14 @@ class HomeViewState extends State<HomeView> {
               model.deleteTask(
                 id: model.getTodoList().todoItems.elementAt(index).id,
                 onComplete: () {
-                  showSnackBar(iTodoViewModel.getMessage());
+                  setState(() {
+                    showSnackBar(iTodoViewModel.getMessage());
+                  });
                 },
                 onError: () {
-                  showSnackBar(iTodoViewModel.getMessage());
+                  setState(() {
+                    showSnackBar(iTodoViewModel.getMessage());
+                  });
                 },
               );
             },

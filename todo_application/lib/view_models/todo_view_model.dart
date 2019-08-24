@@ -172,8 +172,6 @@ class TodoViewModel extends Model with ITodoViewModel {
     VoidCallback onComplete,
     VoidCallback onError,
   }) async {
-    _isLoading = true;
-    notifyListeners();
 
     //remove todoItem with matching id
     _todoList.todoItems.removeWhere((todoItem) => todoItem.id == id);
@@ -182,13 +180,9 @@ class TodoViewModel extends Model with ITodoViewModel {
 
     if (result) {
       _message = iMessage.taskDeleted;
-      _isLoading = false;
-      notifyListeners();
       onComplete();
     } else {
       _message = iMessage.processingError;
-      _isLoading = false;
-      notifyListeners();
       onError();
     }
   }
