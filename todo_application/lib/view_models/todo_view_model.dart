@@ -172,7 +172,6 @@ class TodoViewModel extends Model with ITodoViewModel {
     VoidCallback onComplete,
     VoidCallback onError,
   }) async {
-
     //remove todoItem with matching id
     _todoList.todoItems.removeWhere((todoItem) => todoItem.id == id);
 
