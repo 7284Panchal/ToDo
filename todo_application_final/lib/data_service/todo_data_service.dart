@@ -3,7 +3,7 @@ import 'package:todo_application/data/preference_helper.dart';
 import 'package:todo_application/models/todo_list.dart';
 
 abstract class ITodoDataService {
-  Future<TodoList> geTodoList();
+  Future<TodoList> getTodoList();
 
   Future<bool> setTodoList({TodoList todoList});
 }
@@ -14,7 +14,7 @@ class TodoDataService implements ITodoDataService {
   TodoDataService({@required this.iPreferenceHelper});
 
   @override
-  Future<TodoList> geTodoList() async {
+  Future<TodoList> getTodoList() async {
     //get existing todoTaskList
     String todoListString = await iPreferenceHelper.getString(
         key: PreferenceKeys.preferenceKeyTodoList);
@@ -30,7 +30,7 @@ class TodoDataService implements ITodoDataService {
     return todoList;
   }
 
-  @override
+    @override
   Future<bool> setTodoList({TodoList todoList}) async {
     //covert list in to string to store in preference
     String todoListString = todoListToJson(todoList);

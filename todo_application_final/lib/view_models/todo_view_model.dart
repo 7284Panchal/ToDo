@@ -79,7 +79,7 @@ class TodoViewModel extends Model with ITodoViewModel {
     _isLoading = true;
     notifyListeners();
 
-    _todoList = await todoDataService.geTodoList();
+    _todoList = await todoDataService.getTodoList();
     _message = iMessage.taskLoaded;
 
     _isLoading = false;
@@ -129,6 +129,8 @@ class TodoViewModel extends Model with ITodoViewModel {
     _todoList.todoItems.elementAt(index).isCompleted = isCompleted;
 
     await todoDataService.setTodoList(todoList: _todoList);
+
+    _message = iMessage.taskUpdated;
   }
 
   @override
