@@ -24,10 +24,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # The following adds package for unit test
-  test: ^1.6.3
-  # The following adds package for mocking
-  mockito: ^4.1.0
 
 # The following section is specific to Flutter.
 flutter:
