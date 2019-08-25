@@ -38,18 +38,11 @@ class EditViewState extends State<EditView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "To do",
-          style: TextStyle(
-            fontSize: 22,
-            color: Color(
-              0xFFFFFFFF,
-            ),
-          ),
+          iMessage.appBarTitle,
+          style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,
-        backgroundColor: Color(
-          0xFF17914A,
-        ),
+        backgroundColor: iStyle.themeColor,
         elevation: 10,
       ),
       body: ScopedModel<TodoViewModel>(
@@ -60,9 +53,7 @@ class EditViewState extends State<EditView> {
               return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(
-                      0xFF17914A,
-                    ),
+                    iStyle.themeColor,
                   ),
                 ),
               );
@@ -87,12 +78,7 @@ class EditViewState extends State<EditView> {
             ),
             child: Text(
               iMessage.updateTask,
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(
-                  0xFF333333,
-                ),
-              ),
+              style: iStyle.headerTextStyle,
             ),
           ),
           _buildTaskField(),
@@ -124,11 +110,7 @@ class EditViewState extends State<EditView> {
         maxLines: 1,
         decoration: InputDecoration(
           labelText: iMessage.labelTask,
-          hintStyle: TextStyle(
-            color: Color(
-              0xFF6E7687,
-            ),
-          ),
+          hintStyle: iStyle.textFieldTextStyle,
           errorText: !validateTask ? errorMessageTask : null,
         ),
       ),
@@ -156,11 +138,7 @@ class EditViewState extends State<EditView> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: iMessage.labelDescription,
-          hintStyle: TextStyle(
-            color: Color(
-              0xFF6E7687,
-            ),
-          ),
+          hintStyle: iStyle.textFieldTextStyle,
         ),
       ),
     );
@@ -176,23 +154,16 @@ class EditViewState extends State<EditView> {
             Radius.circular(8),
           ),
         ),
-        color: Color(
-          0xFF17914A,
-        ),
+        color: iStyle.themeColor,
         child: Text(
-          iMessage.updateTask,
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(
-              0xFFFFFFFF,
-            ),
-          ),
+          iMessage.updateTask.toUpperCase(),
+          style: iStyle.buttonTextStyle,
         ),
         onPressed: () {
           if (taskController.text.isEmpty) {
             setState(() {
               validateTask = false;
-              errorMessageTask = "Task should not empty";
+              errorMessageTask = iMessage.errorMessageTask;
             });
           } else {
             widget.iTodoViewModel.updateTask(

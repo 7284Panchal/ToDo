@@ -12,6 +12,7 @@ void main(){
   //Configure dependencies here
   DependencyInjection().configureDependency();
 
+  //get style and message reference which will used in whole app
   iStyle = Injector.getInjector().get<IStyle>();
   iMessage = Injector.getInjector().get<IMessage>();
   runApp(MyTodoApp());
@@ -23,8 +24,8 @@ class MyTodoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Color(0xFF17914A),
-        cursorColor: Color(0xFF17914A),
+        primaryColor: iStyle.themeColor,
+        cursorColor: iStyle.themeColor,
       ),
       title: 'Todo',
       home: HomeView(),

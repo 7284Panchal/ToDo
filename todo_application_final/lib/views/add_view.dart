@@ -36,7 +36,7 @@ class AddViewState extends State<AddView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "To do",
+          iMessage.appBarTitle,
           style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,
@@ -143,7 +143,7 @@ class AddViewState extends State<AddView> {
         ),
         color: iStyle.themeColor,
         child: Text(
-          iMessage.addTask,
+          iMessage.addTask.toUpperCase(),
           style: iStyle.buttonTextStyle,
         ),
         onPressed: () {
