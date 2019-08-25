@@ -23,7 +23,7 @@ class HomeViewState extends State<HomeView> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
-          "To do",
+          iMessage.appBarTitle,
           style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,

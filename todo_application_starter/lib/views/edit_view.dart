@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_application/models/todo_list.dart';
+import 'package:todo_application/main.dart';
 
 class EditView extends StatefulWidget {
   final TodoItem todoItem;
@@ -34,18 +35,11 @@ class EditViewState extends State<EditView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "To do",
-          style: TextStyle(
-            fontSize: 22,
-            color: Color(
-              0xFFFFFFFF,
-            ),
-          ),
+          iMessage.appBarTitle,
+          style: iStyle.appBarTextStyle
         ),
         centerTitle: true,
-        backgroundColor: Color(
-          0xFF17914A,
-        ),
+        backgroundColor: iStyle.themeColor,
         elevation: 10,
       ),
     );

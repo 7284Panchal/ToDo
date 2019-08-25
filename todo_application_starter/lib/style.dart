@@ -59,17 +59,26 @@ class Style implements IStyle {
 
   @override
   TextStyle get appBarTextStyle {
-    return TextStyle(fontSize: 22, color: textWhiteColor);
+    return TextStyle(
+      fontSize: 22,
+      color: textWhiteColor,
+    );
   }
 
   @override
   TextStyle get headerTextStyle {
-    return TextStyle(fontSize: 16, color: headerTextColor);
+    return TextStyle(
+      fontSize: 16,
+      color: headerTextColor,
+    );
   }
 
   @override
   TextStyle get titleTextStyle {
-    return TextStyle(fontSize: 16, color: titleTextColor);
+    return TextStyle(
+      fontSize: 16,
+      color: titleTextColor,
+    );
   }
 
   @override
@@ -83,16 +92,24 @@ class Style implements IStyle {
 
   @override
   TextStyle get subTitleTextStyle {
-    return TextStyle(fontSize: 14, color: subTitleTextColor);
+    return TextStyle(
+      fontSize: 14,
+      color: subTitleTextColor,
+    );
   }
 
   @override
   TextStyle get textFieldTextStyle {
-    return TextStyle(color: hintColor);
+    return TextStyle(
+      color: hintColor,
+    );
   }
 
   @override
   TextStyle get buttonTextStyle {
-    return TextStyle(fontSize: 16, color: textWhiteColor);
+    return TextStyle(
+      fontSize: 16,
+      color: textWhiteColor,
+    );
   }
 }

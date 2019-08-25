@@ -30,7 +30,7 @@ class AddViewState extends State<AddView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "To do",
+          iMessage.appBarTitle,
           style: iStyle.appBarTextStyle,
         ),
         centerTitle: true,

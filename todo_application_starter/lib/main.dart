@@ -12,6 +12,7 @@ void main(){
   //Configure dependencies here
   DependencyInjection().configureDependency();
 
+  //get style and message reference which will used in whole app
   iStyle = Injector.getInjector().get<IStyle>();
   iMessage = Injector.getInjector().get<IMessage>();
   runApp(MyTodoApp());
