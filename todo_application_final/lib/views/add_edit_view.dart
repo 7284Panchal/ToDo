@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:todo_application/enum.dart';
 import 'package:todo_application/main.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:todo_application/models/todo_list.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
+import 'package:todo_application/views/widget/appbar.dart';
 
-class AddView extends StatefulWidget {
-  final ITodoViewModel iTodoViewModel;
+class AddEditView extends StatefulWidget {
+  final TodoViewModel todoViewModel;
+  final TodoItem todoItem;
+  final TaskType taskType;
 
-  AddView({@required this.iTodoViewModel});
+  AddEditView({
+    @required this.todoViewModel,
+    this.todoItem,
+    @required this.taskType,
+  });
 
   @override
   State<StatefulWidget> createState() {
-    return AddViewState();
+    return AddEditViewState();
   }
 }
 
-class AddViewState extends State<AddView> {
+class AddEditViewState extends State<AddEditView> {
   TextEditingController taskController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
@@ -34,24 +43,16 @@ class AddViewState extends State<AddView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          iMessage.appBarTitle,
-          style: iStyle.appBarTextStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: iStyle.themeColor,
-        elevation: 10,
-      ),
-      body: ScopedModel<TodoViewModel>(
-        model: widget.iTodoViewModel,
-        child: ScopedModelDescendant<TodoViewModel>(
+      appBar: buildAppBar(),
+      body: ScopedModel<TodoViewModelImplementation>(
+        model: widget.todoViewModel,
+        child: ScopedModelDescendant<TodoViewModelImplementation>(
           builder: (context, child, model) {
             if (model.isLoading()) {
               return Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    iStyle.themeColor,
+                    style.themeColor,
                   ),
                 ),
               );
@@ -64,7 +65,7 @@ class AddViewState extends State<AddView> {
     );
   }
 
-  Widget _buildBodyContent(ITodoViewModel model) {
+  Widget _buildBodyContent(TodoViewModel model) {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -75,19 +76,29 @@ class AddViewState extends State<AddView> {
               bottom: 20,
             ),
             child: Text(
-              iMessage.createNewTask,
-              style: iStyle.headerTextStyle,
+              widget.taskType == TaskType.ADD_TASK
+                  ? message.createNewTask
+                  : message.updateTask,
+              style: style.headerTextStyle,
             ),
           ),
           _buildTaskField(),
           _buildDescriptionField(),
-          _buildSaveButton(),
+          _buildButton(),
         ],
       ),
     );
   }
 
   Widget _buildTaskField() {
+    //set initial value
+    if (widget.taskType == TaskType.EDIT_TASK) {
+      taskController.text = widget.todoItem.task;
+      taskController.selection = TextSelection.collapsed(
+        offset: taskController.text.length,
+      );
+    }
+
     return Container(
       margin: EdgeInsets.all(20),
       child: TextField(
@@ -102,8 +113,8 @@ class AddViewState extends State<AddView> {
         textInputAction: TextInputAction.next,
         maxLines: 1,
         decoration: InputDecoration(
-          labelText: iMessage.labelTask,
-          hintStyle: iStyle.textFieldTextStyle,
+          labelText: message.labelTask,
+          hintStyle: style.textFieldTextStyle,
           errorText: !validateTask ? errorMessageTask : null,
         ),
       ),
@@ -111,6 +122,14 @@ class AddViewState extends State<AddView> {
   }
 
   Widget _buildDescriptionField() {
+    //set initial value
+    if (widget.taskType == TaskType.EDIT_TASK) {
+      descriptionController.text = widget.todoItem.description;
+      descriptionController.selection = TextSelection.collapsed(
+        offset: descriptionController.text.length,
+      );
+    }
+
     return Container(
       margin: EdgeInsets.all(20),
       child: TextFormField(
@@ -118,20 +137,21 @@ class AddViewState extends State<AddView> {
         controller: descriptionController,
         focusNode: descriptionFocusNode,
         onFieldSubmitted: (value) {
+          descriptionController.text = value;
           taskFocusNode.unfocus();
         },
         keyboardType: TextInputType.text,
         textCapitalization: TextCapitalization.words,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
-          labelText: iMessage.labelDescription,
-          hintStyle: iStyle.textFieldTextStyle,
+          labelText: message.labelDescription,
+          hintStyle: style.textFieldTextStyle,
         ),
       ),
     );
   }
 
-  Widget _buildSaveButton() {
+  Widget _buildButton() {
     return Container(
       width: 150,
       margin: EdgeInsets.all(20),
@@ -141,31 +161,52 @@ class AddViewState extends State<AddView> {
             Radius.circular(8),
           ),
         ),
-        color: iStyle.themeColor,
+        color: style.themeColor,
         child: Text(
-          iMessage.addTask.toUpperCase(),
-          style: iStyle.buttonTextStyle,
+          widget.taskType == TaskType.ADD_TASK
+              ? message.addTask.toUpperCase()
+              : message.update.toUpperCase(),
+          style: style.buttonTextStyle,
         ),
         onPressed: () {
-          if (taskController.text.isEmpty) {
-            setState(() {
-              validateTask = false;
-              errorMessageTask = iMessage.errorMessageTask;
-            });
-          } else {
-            widget.iTodoViewModel.addTask(
-              task: taskController.text,
-              description: descriptionController.text,
-              onComplete: () {
-                Navigator.pop(context);
-              },
-              onError: () {
-                Navigator.pop(context);
-              },
-            );
-          }
+          performOperation();
         },
       ),
     );
+  }
+
+  void performOperation() {
+    if (taskController.text.isEmpty) {
+      setState(() {
+        validateTask = false;
+        errorMessageTask = message.errorMessageTask;
+      });
+    } else {
+      if (widget.taskType == TaskType.ADD_TASK) {
+        widget.todoViewModel.addTask(
+          task: taskController.text,
+          description: descriptionController.text,
+          onComplete: () {
+            Navigator.pop(context, true);
+          },
+          onError: () {
+            Navigator.pop(context, true);
+          },
+        );
+      } else {
+        widget.todoViewModel.updateTask(
+          id: widget.todoItem.id,
+          task: taskController.text,
+          description: descriptionController.text,
+          isCompleted: widget.todoItem.isCompleted,
+          onComplete: () {
+            Navigator.pop(context, true);
+          },
+          onError: () {
+            Navigator.pop(context, true);
+          },
+        );
+      }
+    }
   }
 }

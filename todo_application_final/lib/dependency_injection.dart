@@ -19,35 +19,35 @@ class DependencyInjection {
     Injector injector = Injector.getInjector();
 
     //style
-    injector.map<IStyle>(
-      (i) => Style(),
+    injector.map<Style>(
+      (i) => StyleImplementation(),
       isSingleton: true,
     );
 
     //messages
-    injector.map<IMessage>(
-      (i) => Message(),
+    injector.map<Message>(
+      (i) => MessageImplementation(),
       isSingleton: true,
     );
 
     //preference_helper
-    injector.map<IPreferenceHelper>(
-      (i) => PreferenceHelper(),
+    injector.map<PreferenceHelper>(
+      (i) => PreferenceHelperImplementation(),
       isSingleton: true,
     );
 
     //todo_data_service
-    injector.map<ITodoDataService>(
-      (i) => TodoDataService(
-            iPreferenceHelper: i.get<IPreferenceHelper>(),
+    injector.map<TodoDataService>(
+      (i) => TodoDataServiceImplementation(
+            preferenceHelper: i.get<PreferenceHelper>(),
           ),
       isSingleton: true,
     );
 
     //todo_view_model
-    injector.map<ITodoViewModel>(
-      (i) => TodoViewModel(
-            todoDataService: i.get<ITodoDataService>(),
+    injector.map<TodoViewModel>(
+      (i) => TodoViewModelImplementation(
+            todoDataService: i.get<TodoDataService>(),
           ),
       isSingleton: true,
     );

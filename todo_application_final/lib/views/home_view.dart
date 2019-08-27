@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_dependency_injection/injector.dart';
 import 'package:todo_application/main.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:todo_application/models/todo_list.dart';
 import 'package:todo_application/view_models/todo_view_model.dart';
-import 'package:todo_application/views/add_view.dart';
-import 'package:todo_application/views/edit_view.dart';
+import 'package:todo_application/views/add_edit_view.dart';
+import 'package:todo_application/views/widget/todo_list_item.dart';
+import 'package:todo_application/enum.dart';
+
+import 'widget/appbar.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -14,55 +18,31 @@ class HomeView extends StatefulWidget {
 }
 
 class HomeViewState extends State<HomeView> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //get view model
-  ITodoViewModel iTodoViewModel = Injector.getInjector().get<ITodoViewModel>();
+  TodoViewModel todoViewModel = Injector.getInjector().get<TodoViewModel>();
 
   @override
   void initState() {
     super.initState();
-    iTodoViewModel.loadTodoList();
+    todoViewModel.loadTodoList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(
-          iMessage.appBarTitle,
-          style: iStyle.appBarTextStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: iStyle.themeColor,
-        elevation: 10,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddView(iTodoViewModel: iTodoViewModel),
-            ),
-          ).then((value) {
-            showSnackBar(iTodoViewModel.getMessage());
-          });
-        },
-        backgroundColor: iStyle.themeColor,
-        child: Icon(
-          Icons.add,
-        ),
-        tooltip: iMessage.createNewTask,
-      ),
-      body: ScopedModel<TodoViewModel>(
-        model: iTodoViewModel,
-        child: ScopedModelDescendant<TodoViewModel>(
+      appBar: buildAppBar(),
+      floatingActionButton: buildFloatingActionButton(),
+      body: ScopedModel<TodoViewModelImplementation>(
+        model: todoViewModel,
+        child: ScopedModelDescendant<TodoViewModelImplementation>(
           builder: (context, child, model) {
             if (model.isLoading()) {
               return Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(iStyle.themeColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(style.themeColor),
                 ),
               );
             } else {
@@ -74,7 +54,22 @@ class HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildBodyContent(ITodoViewModel model) {
+  Widget buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        startAddEditScreen(
+          taskType: TaskType.ADD_TASK,
+        );
+      },
+      backgroundColor: style.themeColor,
+      child: Icon(
+        Icons.add,
+      ),
+      tooltip: message.createNewTask,
+    );
+  }
+
+  Widget _buildBodyContent(TodoViewModel model) {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -84,10 +79,10 @@ class HomeViewState extends State<HomeView> {
               bottom: 20,
             ),
             child: Text(
-              iMessage.totalTask(
+              message.totalTask(
                 model.getTodoListCount(),
               ),
-              style: iStyle.headerTextStyle,
+              style: style.headerTextStyle,
             ),
           ),
           Divider(
@@ -99,7 +94,7 @@ class HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildToDoList(ITodoViewModel model) {
+  Widget _buildToDoList(TodoViewModel model) {
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -110,79 +105,87 @@ class HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildToDoListItem({ITodoViewModel model, int index}) {
-    return Column(
-      children: <Widget>[
-        ListTile(
-          title: Text(
-            model.getTodoList().todoItems.elementAt(index).task,
-            style: model.getTodoList().todoItems.elementAt(index).isCompleted
-                ? iStyle.titleDoneTextStyle
-                : iStyle.titleTextStyle,
-          ),
-          subtitle: Text(
-            model.getTodoList().todoItems.elementAt(index).description,
-            style: iStyle.subTitleTextStyle,
-          ),
-          leading: Checkbox(
-            activeColor: iStyle.themeColor,
-            value: model.getTodoList().todoItems.elementAt(index).isCompleted,
-            onChanged: (value) {
-              model.updateTaskStatus(
-                id: model.getTodoList().todoItems.elementAt(index).id,
-                isCompleted: value,
-              );
-              setState(() {
-                model.getTodoList().todoItems.elementAt(index).isCompleted =
-                    value;
-              });
-            },
-          ),
-          trailing: IconButton(
-            icon: Icon(
-              Icons.delete_forever,
-            ),
-            onPressed: () {
-              model.deleteTask(
-                id: model.getTodoList().todoItems.elementAt(index).id,
-                onComplete: () {
-                  setState(() {
-                    showSnackBar(iTodoViewModel.getMessage());
-                  });
-                },
-                onError: () {
-                  setState(() {
-                    showSnackBar(iTodoViewModel.getMessage());
-                  });
-                },
-              );
-            },
-          ),
-          isThreeLine: true,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EditView(
-                      iTodoViewModel: iTodoViewModel,
-                      todoItem: model.getTodoList().todoItems.elementAt(index),
-                    ),
-              ),
-            ).then((value) {
-              showSnackBar(iTodoViewModel.getMessage());
-            });
-          },
-        ),
-        Divider(
-          height: 1,
-        ),
-      ],
+  Widget _buildToDoListItem({TodoViewModel model, int index}) {
+    return TodoListItem(
+      todoItem: model.getTodoList().todoItems.elementAt(index),
+      onStatusChange: (value) {
+        onTaskStatusChange(
+          model: model,
+          index: index,
+          value: value,
+        );
+      },
+      onDelete: () {
+        onTaskDelete(
+          model: model,
+          index: index,
+        );
+      },
+      onItemClick: () {
+        startAddEditScreen(
+          todoItem: model.getTodoList().todoItems.elementAt(index),
+          taskType: TaskType.EDIT_TASK,
+        );
+      },
     );
+  }
+
+  void onTaskStatusChange({
+    @required TodoViewModel model,
+    @required int index,
+    @required bool value,
+  }) {
+    model.updateTaskStatus(
+      id: model.getTodoList().todoItems.elementAt(index).id,
+      isCompleted: value,
+    );
+    setState(() {
+      model.getTodoList().todoItems.elementAt(index).isCompleted = value;
+    });
+  }
+
+  void onTaskDelete({
+    @required TodoViewModel model,
+    @required int index,
+  }) {
+    model.deleteTask(
+      id: model.getTodoList().todoItems.elementAt(index).id,
+      onComplete: () {
+        setState(() {
+          showSnackBar(todoViewModel.getMessage());
+        });
+      },
+      onError: () {
+        setState(() {
+          showSnackBar(todoViewModel.getMessage());
+        });
+      },
+    );
+  }
+
+  void startAddEditScreen({
+    TodoItem todoItem,
+    @required TaskType taskType,
+  }) async {
+    bool success = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddEditView(
+          todoViewModel: todoViewModel,
+          todoItem: todoItem,
+          taskType: taskType,
+        ),
+      ),
+    );
+
+    if (success) {
+      showSnackBar(todoViewModel.getMessage());
+    }
   }
 
   showSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
-      backgroundColor: iStyle.themeColor,
+      backgroundColor: style.themeColor,
       content: Text(message),
       duration: Duration(seconds: 1),
     ));

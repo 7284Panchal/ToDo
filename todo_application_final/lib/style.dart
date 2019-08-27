@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class IStyle {
+abstract class Style {
   Color get themeColor;
 
   Color get headerTextColor;
@@ -32,7 +32,7 @@ abstract class IStyle {
   TextStyle get buttonTextStyle;
 }
 
-class Style implements IStyle {
+class StyleImplementation implements Style {
   @override
   Color get themeColor => Color(0xFF17914A);
 

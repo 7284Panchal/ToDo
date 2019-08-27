@@ -5,16 +5,16 @@ import 'package:todo_application/style.dart';
 import 'package:todo_application/message.dart';
 import 'package:todo_application/views/home_view.dart';
 
-IStyle iStyle;
-IMessage iMessage;
+Style style;
+Message message;
 
 void main(){
   //Configure dependencies here
   DependencyInjection().configureDependency();
 
   //get style and message reference which will used in whole app
-  iStyle = Injector.getInjector().get<IStyle>();
-  iMessage = Injector.getInjector().get<IMessage>();
+  style = Injector.getInjector().get<Style>();
+  message = Injector.getInjector().get<Message>();
   runApp(MyTodoApp());
 }
 
@@ -24,8 +24,8 @@ class MyTodoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: iStyle.themeColor,
-        cursorColor: iStyle.themeColor,
+        primaryColor: style.themeColor,
+        cursorColor: style.themeColor,
       ),
       title: 'Todo',
       home: HomeView(),

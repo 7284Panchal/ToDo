@@ -4,7 +4,7 @@ import 'package:todo_application/data_service/todo_data_service.dart';
 import 'package:todo_application/models/todo_list.dart';
 import 'package:todo_application/main.dart';
 
-abstract class ITodoViewModel {
+abstract class TodoViewModel {
   bool isLoading();
 
   String getMessage();
@@ -43,10 +43,10 @@ abstract class ITodoViewModel {
   });
 }
 
-class TodoViewModel extends Model with ITodoViewModel {
-  ITodoDataService todoDataService;
+class TodoViewModelImplementation extends Model with TodoViewModel {
+  TodoDataService todoDataService;
 
-  TodoViewModel({@required this.todoDataService});
+  TodoViewModelImplementation({@required this.todoDataService});
 
   bool _isLoading = true; //default false
 
@@ -80,7 +80,7 @@ class TodoViewModel extends Model with ITodoViewModel {
     notifyListeners();
 
     _todoList = await todoDataService.getTodoList();
-    _message = iMessage.taskLoaded;
+    _message = message.taskLoaded;
 
     _isLoading = false;
     notifyListeners();
@@ -109,12 +109,12 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = iMessage.taskCreated;
+      _message = message.taskCreated;
       _isLoading = false;
       notifyListeners();
       onComplete();
     } else {
-      _message = iMessage.processingError;
+      _message = message.processingError;
       _isLoading = false;
       notifyListeners();
       onError();
@@ -130,7 +130,7 @@ class TodoViewModel extends Model with ITodoViewModel {
 
     await todoDataService.setTodoList(todoList: _todoList);
 
-    _message = iMessage.taskUpdated;
+    _message = message.taskUpdated;
   }
 
   @override
@@ -156,12 +156,12 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = iMessage.taskUpdated;
+      _message = message.taskUpdated;
       _isLoading = false;
       notifyListeners();
       onComplete();
     } else {
-      _message = iMessage.processingError;
+      _message = message.processingError;
       _isLoading = false;
       notifyListeners();
       onError();
@@ -180,10 +180,10 @@ class TodoViewModel extends Model with ITodoViewModel {
     bool result = await todoDataService.setTodoList(todoList: _todoList);
 
     if (result) {
-      _message = iMessage.taskDeleted;
+      _message = message.taskDeleted;
       onComplete();
     } else {
-      _message = iMessage.processingError;
+      _message = message.processingError;
       onError();
     }
   }

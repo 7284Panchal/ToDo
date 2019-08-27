@@ -1,4 +1,4 @@
-abstract class IMessage {
+abstract class Message {
   String get appBarTitle;
 
   String get createNewTask;
@@ -15,6 +15,8 @@ abstract class IMessage {
 
   String get updateTask;
 
+  String get update;
+
   String get taskLoaded;
 
   String get taskCreated;
@@ -26,7 +28,7 @@ abstract class IMessage {
   String get processingError;
 }
 
-class Message implements IMessage {
+class MessageImplementation implements Message {
   @override
   String get appBarTitle => "Todo";
 
@@ -35,7 +37,7 @@ class Message implements IMessage {
 
   @override
   String totalTask(int count) {
-    return "You have $count task";
+    return "You have $count task${(count != 1)?"s":""}";
   }
 
   @override
@@ -51,7 +53,10 @@ class Message implements IMessage {
   String get errorMessageTask => "Task should not empty";
 
   @override
-  String get updateTask => "Update";
+  String get updateTask => "Update task";
+
+  @override
+  String get update => "Update";
 
   @override
   String get taskLoaded => "Task loaded successfully";
