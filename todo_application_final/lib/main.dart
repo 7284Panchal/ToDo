@@ -27,7 +27,7 @@ class MyTodoApp extends StatelessWidget {
         primaryColor: style.themeColor,
         cursorColor: style.themeColor,
       ),
-      title: 'Todo',
+      title: message.appBarTitle,
       home: HomeView(),
       debugShowCheckedModeBanner: false,
     );

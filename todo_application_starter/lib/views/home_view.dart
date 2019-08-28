@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:todo_application/enum.dart';
 import 'package:todo_application/main.dart';
-import 'package:todo_application/views/add_view.dart';
+import 'package:todo_application/models/todo_list.dart';
+import 'package:todo_application/views/add_edit_view.dart';
+import 'package:todo_application/views/widget/appbar.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -10,7 +13,7 @@ class HomeView extends StatefulWidget {
 }
 
 class HomeViewState extends State<HomeView> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -21,36 +24,44 @@ class HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(
-          iMessage.appBarTitle,
-          style: iStyle.appBarTextStyle,
-        ),
-        centerTitle: true,
-        backgroundColor: iStyle.themeColor,
-        elevation: 10,
+      appBar: buildAppBar(),
+      floatingActionButton: buildFloatingActionButton(),
+    );
+  }
+
+  Widget buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        startAddEditScreen(
+          taskType: TaskType.ADD_TASK,
+        );
+      },
+      backgroundColor: style.themeColor,
+      child: Icon(
+        Icons.add,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddView(),
-            ),
-          ).then((value) {});
-        },
-        backgroundColor: iStyle.themeColor,
-        child: Icon(
-          Icons.add,
+      tooltip: message.createNewTask,
+    );
+  }
+
+  void startAddEditScreen({
+    TodoItem todoItem,
+    @required TaskType taskType,
+  }) async {
+    bool success = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddEditView(
+          todoItem: todoItem,
+          taskType: taskType,
         ),
-        tooltip: iMessage.createNewTask,
       ),
     );
   }
 
   showSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
-      backgroundColor: iStyle.themeColor,
+      backgroundColor: style.themeColor,
       content: Text(message),
       duration: Duration(seconds: 1),
     ));

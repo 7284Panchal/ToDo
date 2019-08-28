@@ -1,12 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-abstract class IPreferenceHelper {
+abstract class PreferenceHelper {
   Future<bool> set({String key, String value});
 
   Future<String> getString({String key});
 }
 
-class PreferenceHelper implements IPreferenceHelper {
+class PreferenceHelperImplementation implements PreferenceHelper {
   @override
   Future<String> getString({String key}) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

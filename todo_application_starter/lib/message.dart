@@ -1,4 +1,4 @@
-abstract class IMessage {
+abstract class Message {
   String get appBarTitle;
 
   String get createNewTask;
@@ -26,7 +26,7 @@ abstract class IMessage {
   String get processingError;
 }
 
-class Message implements IMessage {
+class MessageImplementation implements Message {
   @override
   String get appBarTitle => "Todo";
 
