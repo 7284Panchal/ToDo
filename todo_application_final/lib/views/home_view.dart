@@ -178,12 +178,12 @@ class HomeViewState extends State<HomeView> {
       ),
     );
 
-    if (success) {
+    if (success != null && success) {
       showSnackBar(todoViewModel.getMessage());
     }
   }
 
-  showSnackBar(String message) {
+  void showSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       backgroundColor: style.themeColor,
       content: Text(message),

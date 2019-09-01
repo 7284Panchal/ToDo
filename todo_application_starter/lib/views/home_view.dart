@@ -59,7 +59,7 @@ class HomeViewState extends State<HomeView> {
     );
   }
 
-  showSnackBar(String message) {
+  void showSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(
       backgroundColor: style.themeColor,
       content: Text(message),
